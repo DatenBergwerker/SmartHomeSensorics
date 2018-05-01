@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -22,11 +23,11 @@ def make_measure_pairplot(subset_data: pd.DataFrame,
         figure = sns.pairplot(subset_data[plot_params['cols']])
 
     if plot_params['sensor']:
-        figure.axes.set_title(f'Feature Pairwise Plot for Room {plot_params["room"]}, '
-                              f'Measurement {plot_params["measurement"]}, Sensor Node {plot_params["sensor"]}')
+        figure.fig.set_title(f'Feature Pairwise Plot for Room {plot_params["room"]}, '
+                             f'Measurement {plot_params["measurement"]}, Sensor Node {plot_params["sensor"]}')
     else:
-        figure.set_title(f'Feature Pairwise Plot for Room {plot_params["room"]}, '
-                         f'Measurement {plot_params["measurement"]}')
+        figure.fig.set_title(f'Feature Pairwise Plot for Room {plot_params["room"]}, '
+                             f'Measurement {plot_params["measurement"]}')
     return figure
 
 
@@ -54,5 +55,6 @@ if __name__ == '__main__':
                 'measurement': measurement
             })
             figure = make_measure_pairplot(subset_data=subset_data, plot_params=plot_params, hue=True)
-            figure.savefig(f'data_analysis/plots/pairplot_{room}_{measurement}_sensor_{plot_params["sensor"]}.png')
+            figure.savefig(os.path.join('data_analysis',
+                                        'plots' f'pairplot_{room}_{measurement}_sensor_{plot_params["sensor"]}.png'))
             plt.clf()

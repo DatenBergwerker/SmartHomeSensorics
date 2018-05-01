@@ -31,26 +31,27 @@ room_extractor = re.compile(r'datasets-location_([ABC])$')
 numeration_extractor = re.compile(r'-measurement([0-9]{2}).csv$')
 
 # iterate over all csv and bind them together
-for dirname, dirnames, filenames in os.walk(f'{DATA_PATH}/Room-Climate-Datasets'):
-        try:
-            name = room_extractor.search(string=dirname).group(1)
-        except AttributeError as e:
-            name = None
-            continue
+for dirname, dirnames, filenames in os.walk(DATA_PATH):
 
-        if name:
-            for file in filenames:
-                counter = numeration_extractor.search(string=file).group(1)
-                full_path = os.path.join(dirname, file)
-                print(full_path)
+    try:
+        name = room_extractor.search(string=dirname).group(1)
+    except AttributeError as e:
+        name = None
+        continue
 
-                temp_df = pd.read_csv(full_path, header=None)
-                temp_df['room_location'] = name
-                temp_df['measurement_no'] = counter
-                temp_df.columns = cols
-                complete_data = complete_data.append(
-                    temp_df
-                )
+    if name:
+        for file in filenames:
+            counter = numeration_extractor.search(string=file).group(1)
+            full_path = os.path.join(dirname, file)
+            print(full_path)
+
+            temp_df = pd.read_csv(full_path, header=None)
+            temp_df['room_location'] = name
+            temp_df['measurement_no'] = counter
+            temp_df.columns = cols
+            complete_data = complete_data.append(
+                temp_df
+            )
 
 complete_sorted = complete_data.sort_values(by=['room_location', 'measurement_no', 'entry_id'])
 

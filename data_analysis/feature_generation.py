@@ -31,9 +31,9 @@ JOIN_FEATURES = [
 WINDOW_SIZE = 30
 
 # number of cores used for the feature computation
-NCORES = cpu_count()
+NCORES = cpu_count() - 1
 
-loader = DataLoader(path=os.path.join(os.getcwd(),'SmartHomeSensorics_full_data.csv'))
+loader = DataLoader(path=os.path.join(os.getcwd(), 'SmartHomeSensorics_full_data.csv'))
 full_data = loader.raw_data
 room_params = {'A': 60,
                'B': 44,
@@ -50,14 +50,14 @@ for room in room_params:
         X_roll = roll_time_series(ts_for_rolling, column_id='node_id', column_sort='relative_timestamp',
                                   column_kind=None, rolling_direction=1, max_timeshift=WINDOW_SIZE)
 
-        for timepoint in X_roll['node_id'].unique():
-            print(f"Timepoint: {timepoint}, Subset size: {X_roll.loc['node_id' == timepoint].size}")
-            temp_df = extract_features(X_roll, n_jobs=NCORES, column_sort='relative_timestamp',
-                                       column_id='node_id', column_kind=None)
-            join_df = subset_data[FEATURES + JOIN_FEATURES]
-            join_df.set_index('relative_timestamp', inplace=True)
-            join_df = join_df.join(temp_df)
-            feature_matrix_list.append(join_df)
+        # for timepoint in X_roll['node_id'].unique():
+        # print(f"Timepoint: {timepoint}, Subset size: {X_roll.loc[X_roll.node_id == timepoint].size}")
+        temp_df = extract_features(X_roll, n_jobs=NCORES, column_sort='relative_timestamp',
+                                   column_id='node_id', column_kind=None, show_warnings=False)
+        join_df = subset_data[FEATURES + JOIN_FEATURES]
+        join_df.set_index('relative_timestamp', inplace=True)
+        join_df = join_df.join(temp_df)
+        feature_matrix_list.append(join_df)
 
 full_feature_matrix = pd.concat(feature_matrix_list, axis=0, ignore_index=True)
 full_feature_matrix = full_feature_matrix.reset_index(drop=True)

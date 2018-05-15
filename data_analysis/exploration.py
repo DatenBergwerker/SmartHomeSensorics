@@ -22,6 +22,7 @@ def make_measure_pairplot(subset_data: pd.DataFrame,
     else:
         figure = sns.pairplot(subset_data[plot_params['cols']])
 
+    # TODO: correctly set figure title
     if plot_params['sensor']:
         figure.fig.set_title(f'Feature Pairwise Plot for Room {plot_params["room"]}, '
                              f'Measurement {plot_params["measurement"]}, Sensor Node {plot_params["sensor"]}')

@@ -1,7 +1,6 @@
 import re
 import os
 import pandas as pd
-import sqlalchemy
 import yaml
 
 PATH, DATA_PATH =
@@ -54,9 +53,4 @@ for dirname, dirnames, filenames in os.walk(DATA_PATH):
             )
 
 complete_sorted = complete_data.sort_values(by=['room_location', 'measurement_no', 'entry_id'])
-
-# db = config['database']
-# db_engine = sqlalchemy.create_engine(f'''{db['driverstr']}://{db['user']}:{db['password']}@{db['host']}/{db['database']}''')
-# complete_data.to_sql('complete_data', db_engine, if_exists='replace', index=False)
-
 complete_sorted.to_csv('SmartHomeSensorics_full_data.csv', header=True, index=False)

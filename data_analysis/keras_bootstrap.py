@@ -5,14 +5,29 @@ from keras.layers import Dense, Dropout
 from keras.utils import to_categorical
 from sklearn.model_selection import ShuffleSplit
 from sklearn.preprocessing import Imputer, StandardScaler
-
+from sklearn.metrics import confusion_matrix
 
 ITERATIONS = 50
 
 data_matrix = pd.read_csv('SmartHomeSensorics_selected_feature_matrix_cleaned.csv')
-X = data_matrix.drop(['binary_target', 'index', 'entry_id', 'absolute_timestamp',
-                      'no_occupants', 'room_location', 'node_id',
-                      'measurement_no', 'occupant_activity', 'relative_timestamp'], axis=1).values
+X = data_matrix.drop(['binary_target',
+                      'index',
+                      'entry_id',
+                      'no_occupants',
+                      'node_id',
+                      'measurement_no',
+                      'occupant_activity',
+                      'state_door',
+                      'state_window',
+                      'room_location',
+                      'measurement_no',
+                      'relative_timestamp',
+                      'absolute_timestamp',
+                      'temperature',
+                      'relative_humidity',
+                      'light_sensor_1_wvl_nm',
+                      'light_sensor_2_wvl_nm'
+                      ], axis=1).values
 
 # Construct feature vector for multiclass and binary classification
 # last column contains binary target, the others the one hot encoded multiclass target
@@ -20,6 +35,7 @@ y = data_matrix['occupant_activity']
 y = to_categorical(y)
 num_classes = y.shape[1]
 y = np.concatenate((y, data_matrix['binary_target'].values.reshape((y.shape[0], 1))), axis=1)
+
 
 # TODO: implement f1, precision, recall hooks
 
@@ -57,7 +73,9 @@ scaler = StandardScaler()
 split = ShuffleSplit(n_splits=1, test_size=0.3)
 
 result_list_bc = []
+conf_mats_bc = []
 result_list_mc = []
+conf_mats_mc = []
 
 # Bootstrapped Cross Validation
 for i in range(ITERATIONS):
@@ -77,6 +95,7 @@ for i in range(ITERATIONS):
 
     mlp.fit(x=X_train, y=y_train[:, -1], epochs=10, batch_size=512)
     result_list_bc.append(mlp.evaluate(x=X_test, y=y_test[:, -1]))
+    conf_mats_bc.append(m)
 
     mlp_mc.fit(x=X_train, y=y_train[:, :-1], epochs=10, batch_size=512)
     result_list_mc.append(mlp_mc.evaluate(x=X_test, y=y_test[:, :-1]))

@@ -4,7 +4,6 @@ import pandas as pd
 import yaml
 
 PATH, DATA_PATH =
-config = yaml.load(open(os.path.join(PATH, 'project_config.yml')))
 
 # setup container
 cols = [
